@@ -16,3 +16,10 @@
 
 - 决策：参考 Matt Pocock 的决策树和 Satya 的持久化记录，但由 IntentFlow 自己维护最终 skill。
 - 影响：本地文件结构、记录格式和停止条件以 IntentFlow 为准。
+
+## 2026-09-29：Figma 工作流整合
+
+- 决策：保留 Figwright 源码作为外部工具，提取 `figma-build` 和 `figma-codegen` 及其参考规则到 IntentFlow。
+- 依据：用户确认整合方案。
+- 影响：IntentFlow 负责产品决策、需求和真实功能落地；Figwright MCP/plugin 负责 Figma 工具能力。
+- 清理：删除已确认的插件构建产物、运行时缓存和重复历史 QA 目录。

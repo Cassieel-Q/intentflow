@@ -22,6 +22,17 @@ docs/             设计文档和实施计划
 3. 把确认结果写入 `decisions.md`、`open-questions.md`、`acceptance.md` 和 `grill-log.md`。
 4. 再进入 PRD、设计、实现或验证流程。
 
+## Figma 工作流
+
+需要做 Figma 相关工作时，从 [docs/figma/README.md](./docs/figma/README.md) 进入：
+
+```text
+personal-grill-me
+→ figma-build / figma-codegen
+→ figma-to-real-feature
+→ 浏览器和截图验证
+```
+
 ## 我的工作原则
 
 - 把用户确认、助手建议和未验证假设分开；
