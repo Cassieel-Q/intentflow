@@ -1,8 +1,8 @@
 # IntentFlow Foundation and Personal Grill-Me Implementation Plan
 
-> **For agentic workers:** Follow the approved design in `docs/superpowers/specs/2026-09-29-personal-grill-me-design.md`. Execute each task with evidence and review before moving on.
+> **For agentic workers:** Follow the approved design in `docs/superpowers/specs/2026-09-29-intentflow-grill-me-design.md`. Execute each task with evidence and review before moving on.
 
-**Goal:** Turn the empty IntentFlow repository into a personal AI product-workflow workspace based on Superflow, with a usable, durable `grill-me` skill.
+**Goal:** Turn the empty IntentFlow repository into a personal AI product-workflow workspace based on the historical reference workflow, with a usable, durable `grill-me` skill.
 
 **Architecture:** Keep the repository Markdown-first. The project README and status files route tasks; `requirements/` owns requirement records; `skills/personal-grill-me/` owns the one-question decision interview; existing engineering rules remain available as downstream workflows.
 
@@ -15,7 +15,7 @@
 - Discover repository facts before asking the user.
 - Distinguish user-confirmed decisions, assistant recommendations, and unverified assumptions.
 - Persist durable outcomes in the active `requirements/<name>/` record.
-- Preserve the downloaded Superflow directory as the upstream reference.
+- Preserve the downloaded historical reference directory outside this repository.
 - Do not push to GitHub as part of local implementation.
 
 ---
@@ -24,7 +24,7 @@
 
 **Files:**
 - Create: `README.md`, `00-项目索引.md`, `00-当前状态.md`, `DECISION_LOG.md`, `05-QA-Gate.md`
-- Create: `docs/superpowers/specs/2026-09-29-personal-grill-me-design.md`
+- Create: `docs/superpowers/specs/2026-09-29-intentflow-grill-me-design.md`
 - Copy and adapt: `assistants/`, `codebase-analysis/`, `codebases/`, `requirements/`, `scripts/`, `skills/`, `todos/`, `.gitignore`
 
 **Interface:** A new session can read the index and status, locate the relevant workflow, and identify current versus reference material.
@@ -32,7 +32,7 @@
 - [ ] Verify the source file inventory and the empty target repository.
 - [ ] Copy the reusable upstream folders without touching the source directory.
 - [ ] Add the approved design document and personal project entry files.
-- [ ] Update the README, indexes, and links from Superflow to IntentFlow where the text describes this project.
+- [ ] Verify the README, indexes, and links consistently identify this project as IntentFlow.
 - [ ] Verify all expected files exist and no source files were overwritten.
 
 ## Task 2: Create and validate `personal-grill-me`

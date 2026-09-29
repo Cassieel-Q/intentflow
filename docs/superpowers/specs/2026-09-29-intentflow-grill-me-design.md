@@ -1,4 +1,4 @@
-# Personal Superflow `grill-me` Design
+# IntentFlow Personal `grill-me` Design
 
 ## Status
 
@@ -7,7 +7,7 @@ turn. Implementation has not started.
 
 ## Problem
 
-The current Superflow repository has rules for requirements, collaboration,
+The current IntentFlow repository has rules for requirements, collaboration,
 contracts, debugging, TDD, and verification. It does not yet provide a complete
 front door for turning a vague product idea into explicit decisions before
 writing a PRD or implementation plan.
@@ -18,7 +18,7 @@ questions at once, or leave the important decisions only in chat history.
 
 ## Goal
 
-Create a personal `grill-me` skill for the Superflow workspace that:
+Create a personal `grill-me` skill for the IntentFlow workspace that:
 
 1. Uses a decision-tree model to identify the highest-leverage unresolved
    decision.
@@ -41,7 +41,7 @@ Create a personal `grill-me` skill for the Superflow workspace that:
 
 ## Positioning
 
-Superflow is being optimized first as a personal AI product-workflow system.
+IntentFlow is being optimized first as a personal AI product-workflow system.
 The first release should favor clarity, durable records, low cognitive load,
 and compatibility with the existing repository layout over broad framework
 generality.
@@ -157,7 +157,7 @@ implementation planning, implementation, or verification.
 | Too many questions slow down useful work | Select one highest-impact question and stop when the next action is clear |
 | The skill becomes a generic interview script | Require evidence, decision impact, and a recommended answer for each question |
 | Chat decisions are not persisted | Make requirement files the durable output contract |
-| Third-party skill behavior conflicts with Superflow | Use external projects as references only; keep local instructions authoritative |
+| Third-party skill behavior conflicts with IntentFlow | Use external projects as references only; keep local instructions authoritative |
 | Requirement directory is not known | Ask for the requirement name only when it cannot be inferred from the workspace |
 
 ## Verification plan

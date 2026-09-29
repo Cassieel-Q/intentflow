@@ -4,7 +4,7 @@
 
 已创建工作区级基准 skill：
 
-- [figma-to-real-feature](../.codex/skills/figma-to-real-feature/SKILL.md)
+- [figma-to-real-feature](../local-codex-skills/figma-to-real-feature/SKILL.md)
 
 从 Figma 到真实前后端功能，最消耗 token 的不是“看设计稿”，而是把设计稿和现有代码体系对齐：
 
@@ -157,4 +157,4 @@ Figma 节点/页面
 - 防止旧页面改造时破坏已有组件行为。
 - 让用户在高影响的 UI 架构决策前有审批点。
 
-返回：[项目总索引](./README.md)
+返回：[项目总索引](../README.md)

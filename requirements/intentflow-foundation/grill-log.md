@@ -2,7 +2,7 @@
 
 ## 意图
 
-把 Superflow 改造成名为 IntentFlow 的个人 AI 产品工作台，并加入自有的
+把历史参考工作流改造成名为 IntentFlow 的个人 AI 产品工作台，并加入自有的
 `grill-me` 前置决策 skill。
 
 ## 已确认
