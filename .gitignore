@@ -1,0 +1,39 @@
+# OS metadata
+.DS_Store
+**/.DS_Store
+
+# Dependencies and generated output
+**/node_modules/
+**/dist/
+**/build/
+**/target/
+**/.cache/
+**/coverage/
+
+# Local configuration and credentials
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.template
+**/*.pem
+**/*.key
+**/*.p12
+**/*.pfx
+**/*credentials*
+**/*secrets*
+
+# IDE and local tool state
+**/.idea/
+**/.vscode/
+**/.codex/
+*.log
+*.tmp
+*.swp
+*~
+
+# Optional local workspace material
+/archives/
+/codebases/*
+!/codebases/README.md
+/mcps/
+/private/
