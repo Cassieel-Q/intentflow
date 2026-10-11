@@ -371,21 +371,17 @@ METRICS = """# 指标定义
 STAGE_TEMPLATE = """<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><style>
 *{box-sizing:border-box} body{margin:0;font:16px/1.7 system-ui,"Microsoft YaHei",sans-serif;background:#f5f7fa;color:#243044;display:grid;place-items:center;min-height:100vh}
-.card{background:#fff;border:1px solid #dfe5ec;border-radius:16px;padding:48px 56px;max-width:780px;width:92%;box-shadow:0 6px 24px rgba(20,40,70,.06)}
-.eyebrow{color:#1f7a5c;font:600 13px/1 ui-monospace,monospace;letter-spacing:.1em}
-h1{font-size:34px;margin:8px 0 12px}
-p{color:#51647a;margin:6px 0}
-.code{background:#f2f5f9;border:1px solid #dfe5ec;border-radius:10px;padding:14px 18px;font:13px/1.7 ui-monospace,monospace;color:#3a4a5e;margin-top:16px;white-space:pre}
-.badge{display:inline-block;border:1px solid #e2c47c;background:#fbf4e2;color:#8f6713;border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600;margin-top:14px}
-code{font:13px ui-monospace,monospace;background:#eef2f7;border:1px solid #dfe5ec;border-radius:5px;padding:1px 6px}
+.card{background:#fff;border:1px solid #dfe5ec;border-radius:18px;padding:70px 90px;text-align:center;box-shadow:0 6px 24px rgba(20,40,70,.06)}
+.eyebrow{color:#1f7a5c;font:600 15px/1 ui-monospace,monospace;letter-spacing:.28em}
+h1{font-size:46px;margin:18px 0 0}
 </style></head><body><div class="card">
-<div class="eyebrow">__NO__</div><h1>__TITLE__</h1>__BODY__
+<div class="eyebrow">__NO__</div><h1>__TITLE__</h1>
 </div></body></html>
 """
 
 
-def _stage_page(no: str, title: str, body: str) -> str:
-    return STAGE_TEMPLATE.replace("__NO__", no).replace("__TITLE__", title).replace("__BODY__", body)
+def _stage_page(no: str, title: str) -> str:
+    return STAGE_TEMPLATE.replace("__NO__", no).replace("__TITLE__", title)
 
 
 def _run(*args: str, check: bool = True) -> None:
@@ -410,17 +406,8 @@ def _write_case(req: Path) -> None:
     (req / "qa" / "checklist.md").write_text(CHECKLIST, encoding="utf-8")
     (req / "analytics" / "report.md").write_text(REPORT, encoding="utf-8")
     (req / "analytics" / "metric-definitions.md").write_text(METRICS, encoding="utf-8")
-    (req / "stage-1.html").write_text(_stage_page(
-        "STEP 1", "项目进入",
-        '<p>确定当前需求，复用其 <code>requirements/&lt;name&gt;/</code> 目录，读取已有状态、决策与资料。</p>'
-        '<div class="code">requirements/expense-app/\n├── README.md\n├── source.md\n├── decisions.md\n├── open-questions.md\n├── research/  需求证据\n├── prd/       PRD\n├── design/    原型\n├── flows/     流程\n├── qa/        验收\n└── analytics/ 数据复盘</div>',
-    ), encoding="utf-8")
-    (req / "stage-3.html").write_text(_stage_page(
-        "STEP 3", "需求闸门",
-        '<p>进入 PRD 前运行需求挖掘终审闸门，判定需求材料是否足以支撑正式产出。</p>'
-        '<span class="badge">provisional · 探索性演示</span>'
-        '<p style="margin-top:14px">只有 <code>ready</code> 才能进入正式 PRD；<code>provisional</code> 只能做探索性方案；<code>blocked</code> 必须先补材料。</p>',
-    ), encoding="utf-8")
+    (req / "stage-1.html").write_text(_stage_page("STEP 1", "项目进入"), encoding="utf-8")
+    (req / "stage-3.html").write_text(_stage_page("STEP 3", "需求闸门"), encoding="utf-8")
 
 
 def _generate(req: Path) -> None:
@@ -450,6 +437,9 @@ def _find_ffmpeg() -> Path | None:
 def _record(req: Path, target: Path) -> None:
     from playwright.sync_api import sync_playwright
 
+    def scroll(page, px: int) -> None:
+        page.evaluate(f"window.scrollBy({{top: {px}, behavior: 'smooth'}})")
+
     video_dir = req.parent / "video"
     video_dir.mkdir()
     with sync_playwright() as p:
@@ -464,51 +454,63 @@ def _record(req: Path, target: Path) -> None:
 
         # 1 项目进入
         page.goto((req / "stage-1.html").as_uri(), wait_until="networkidle")
-        page.wait_for_timeout(2600)
+        page.wait_for_timeout(2200)
 
-        # 2 需求挖掘
+        # 2 需求挖掘（滚动展示反馈卡片与聚类）
         page.goto((req / "research" / "demand-insight.html").as_uri(), wait_until="networkidle")
-        page.wait_for_timeout(2800)
+        page.wait_for_timeout(1800)
+        scroll(page, 700)
+        page.wait_for_timeout(1500)
+        scroll(page, 700)
+        page.wait_for_timeout(1500)
 
         # 3 需求闸门
         page.goto((req / "stage-3.html").as_uri(), wait_until="networkidle")
-        page.wait_for_timeout(2600)
+        page.wait_for_timeout(2200)
 
-        # 4 PRD 评审
+        # 4 PRD 评审（滚动展示功能详情与嵌入原型）
         page.goto((req / "prd" / "PRD-review.html").as_uri(), wait_until="networkidle")
-        page.wait_for_timeout(3000)
-
-        # 5 流程 + 原型（真实点击：记一笔 → 选分类 → 保存 → 统计）
-        page.goto((req / "design" / "prototype.html").as_uri(), wait_until="networkidle")
-        page.wait_for_timeout(2400)
-        page.locator(".fab").click()
-        page.wait_for_timeout(1600)
-        page.locator('#cats .cat[data-name="餐饮"]').click()
-        page.wait_for_timeout(900)
-        page.locator(".save-btn").click()
         page.wait_for_timeout(1800)
-        page.locator("#P01 .navbar").click()  # small no-op pause on updated home
-        page.wait_for_timeout(600)
+        scroll(page, 800)
+        page.wait_for_timeout(1700)
+        scroll(page, 800)
+        page.wait_for_timeout(1700)
+
+        # 5 流程 + 原型（快速点击：记一笔 → 选分类 → 保存 → 统计）
+        page.goto((req / "design" / "prototype.html").as_uri(), wait_until="networkidle")
+        page.wait_for_timeout(2000)
+        page.locator(".fab").click()
+        page.wait_for_timeout(900)
+        page.locator('#cats .cat[data-name="餐饮"]').click()
+        page.wait_for_timeout(700)
+        page.locator(".save-btn").click()
+        page.wait_for_timeout(1600)
         page.evaluate("location.hash='P03'")
         page.wait_for_timeout(2200)
 
-        # 6 验收
+        # 6 验收（滚动后点通过）
         page.goto((req / "qa" / "checklist-review.html").as_uri(), wait_until="networkidle")
-        page.wait_for_timeout(2200)
+        page.wait_for_timeout(1600)
+        scroll(page, 400)
+        page.wait_for_timeout(1300)
         try:
             page.locator(".acceptance-status-button[data-status='通过']").first.click()
         except Exception:
             pass
-        page.wait_for_timeout(1500)
+        page.wait_for_timeout(1400)
 
-        # 7 数据复盘
+        # 7 数据复盘（依次滚动浏览多个面板并交互）
         page.goto((req / "analytics" / "report-review.html").as_uri(), wait_until="networkidle")
-        page.wait_for_timeout(2200)
+        page.wait_for_timeout(1600)
+        scroll(page, 800)
+        page.wait_for_timeout(1300)
         page.locator('[data-funnel-base="previous"]').click()
-        page.wait_for_timeout(1100)
-        page.locator("#panel-5").scroll_into_view_if_needed()
         page.wait_for_timeout(1000)
+        page.locator("#panel-5").scroll_into_view_if_needed()
+        page.wait_for_timeout(900)
         page.locator('.attribution-block[data-kind="hypothesis"] summary').click()
+        page.wait_for_timeout(1100)
+        page.locator("#panel-7").scroll_into_view_if_needed()
         page.wait_for_timeout(1300)
 
         context.close()
