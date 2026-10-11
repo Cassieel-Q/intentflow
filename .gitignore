@@ -10,6 +10,12 @@
 **/.cache/
 **/coverage/
 
+# Python
+**/__pycache__/
+*.py[cod]
+**/.pytest_cache/
+**/.mypy_cache/
+
 # Local configuration and credentials
 **/.env
 **/.env.*

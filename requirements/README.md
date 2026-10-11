@@ -11,5 +11,6 @@ Each project may keep its own requirement directory in private storage.
 - Record interface, data, state, validation, and risk changes explicitly.
 - Link evidence instead of copying large implementation details.
 - Add a final-review proposal before final acceptance.
+- Keep PRD, acceptance, and analytics Markdown in the same named requirement directory; create stage folders only when used.
 
 See [common](./common/README.md) for shared templates and workflow guidance.

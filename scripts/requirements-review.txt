@@ -1,0 +1,2 @@
+markdown-it-py>=3,<5
+# Optional for real screenshots: playwright>=1.50,<2

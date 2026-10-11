@@ -11,11 +11,35 @@ Turn an unclear product intention into a decision-ready handoff for IntentFlow.
 The skill is a decision clarifier, not a PRD writer, implementation planner, or
 bug reviewer.
 
+## Route in
+
+Use this skill only when an unresolved product choice could materially change
+the next research question or deliverable. If the audience, problem, and scope
+are clear but the claimed pain or opportunity lacks evidence, use
+`demand-evidence-research`. If both decisions and evidence are sufficient,
+proceed to the relevant delivery workflow. Do not ask a question merely to run
+Grill-Me. An evidence scan can happen before or after a clarification when its
+scope is clear; it cannot silently decide an unknown audience for the user.
+
 ## Core rule
 
 Ask **one** highest-impact question per turn. Do not write a full solution to
 avoid asking. Do not present an assistant recommendation as a user-confirmed
 decision.
+
+When the user explicitly asks for all questions at once, switch to a single
+structured discovery questionnaire. Group only questions about the need itself:
+who encounters the situation, what they are trying to do, what is difficult,
+how they handle it today, what the impact is, what result they want, what
+evidence or examples exist, and what constraints apply. Do not turn the
+questionnaire into a list of page, button, interaction order, trigger,
+algorithm, or feature-choice questions. Those belong to PRD or design after the
+need is clear.
+
+For a demand-discovery example, record the questionnaire answers as evidence
+about the problem and desired outcome. Keep any previously volunteered product
+preferences in a clearly marked deferred-design note; do not use them to claim
+that the underlying need has been validated.
 
 ## Start
 
@@ -94,8 +118,8 @@ Main risks:
 Recommended next workflow:
 ```
 
-The next workflow may be PRD drafting, design analysis, implementation
-planning, implementation, or verification.
+The next workflow may be `demand-evidence-research`, PRD drafting, design
+analysis, implementation planning, implementation, or verification.
 
 When the user supplied a deadline, carry the wording into the handoff as a
 delivery constraint. Preserve relative wording such as “月底前” unless a

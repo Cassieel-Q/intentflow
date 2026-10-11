@@ -3,7 +3,7 @@
 IntentFlow 的 Figma 工作流由三层组成：
 
 ```text
-personal-grill-me
+按需 personal-grill-me / demand-evidence-research
 → figma-build / figma-codegen
 → figma-to-real-feature
 ```
@@ -22,7 +22,7 @@ IntentFlow 只维护工作流和记录规则，不在本仓库复制 Figwright �
 
 ## 使用顺序
 
-1. 先使用 `personal-grill-me` 确认产品目标、用户、范围和验收。
+1. 先读已有需求材料。关键产品选择未定时使用 `personal-grill-me`；痛点或机会需要证据时使用 `demand-evidence-research`。两者都不需要时直接进入设计任务。
 2. 需要创建设计时使用 `figma-build`。
 3. 需要从设计生成代码时使用 `figma-codegen`。
 4. 进入真实项目前使用 `figma-to-real-feature`，核对接口、权限、旧行为和页面状态。
