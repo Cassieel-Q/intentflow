@@ -1,13 +1,12 @@
-"""Record a full-workflow screen capture of IntentFlow.
+"""Record a full-workflow demo of IntentFlow as an animated GIF.
 
-Builds a minimal but complete example case (a subscription-management app,
-labelled as demo data), then records one continuous screen capture walking the
-seven stages in order — including clicking through the operable prototype:
+Builds a minimal but complete example case (a expense-tracking app, labelled
+as demo data), renders every workflow stage's artifact, records one continuous
+screen capture walking the seven stages — including clicking through the
+operable prototype — then converts the recording into docs/demo/workflow.gif:
 
   1 项目进入 → 2 需求挖掘 → 3 需求闸门 → 4 PRD 评审
   → 5 流程+原型(点击操作) → 6 验收 → 7 数据复盘
-
-Output: docs/demo/workflow.webm
 """
 
 from __future__ import annotations
@@ -21,89 +20,91 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CLI = ROOT / "scripts" / "intentflow.py"
 
+# ---------------------------------------------------------------- demo case
+
 FEEDBACK = """id,cluster,scenario,obstacle,impact,desired,evidence_type,source_id
-D-01,订阅管理,多订阅,找不到取消入口,误续费,一键取消,simulation,
-D-02,续费提醒,自动续费,续费前无提醒,意外扣费,提前提醒,simulation,
-D-03,支出统计,订阅较多,金额分散难统计,预算失控,汇总统计,simulation,
+D-01,记账负担,日常消费,手动记账步骤太多,坚持不下去,几秒记完一笔,simulation,
+D-02,分类不清,餐饮购物,不知道该选哪个分类,记录乱七八糟,分类自动又准确,simulation,
+D-03,预算失控,月底结账,月底才发现超支,存不下钱,超支前提前提醒,simulation,
 """
 
 PRODUCTS = """name,official_url,observed_capability,unverified,source_id
-示例订阅管理产品,https://example.org/sub,订阅列表与续费提醒,实际效果未核实,S-01
+示例记账产品,https://example.org/bill,快速记账与分类统计,实际效果未核实,S-01
 """
 
 SOURCE = """# 材料与来源
 
 | ID | 材料 | 来源位置 | 获取日期 | 适用范围 |
 | --- | --- | --- | --- | --- |
-| S-01 | 公开产品页 | https://example.org/sub | 2026-10-11 | 演示 |
+| S-01 | 公开产品页 | https://example.org/bill | 2026-10-11 | 演示 |
 """
 
-FINDINGS = """# 订阅管理 App 需求洞察
+FINDINGS = """# 记账本 App 需求洞察
 
 ## 洞察总览
 
-用户需要在一个入口里看清所有订阅、控制取消与续费提醒。以下为演示数据。
+用户不缺记账工具，缺的是「几秒记完、超支提前知道」。以下为演示数据。
 
 ## 场景与材料
 
-多订阅用户管理分散；材料为模拟反馈与公开产品页。
+日常消费后记账坚持难；材料为模拟反馈与公开产品页。
 
 ## 反馈与聚类
 
-- 订阅管理：找不到取消入口。
-- 续费提醒：续费前无提醒导致意外扣费。
-- 支出统计：金额分散难以汇总。
+- 记账负担：手动步骤太多，坚持不下去。
+- 分类不清：不知道选哪个分类，记录混乱。
+- 预算失控：月底才发现超支。
 
 ## 问题与归因
 
-分散的订阅入口与缺失的续费提醒，是用户失控的主要原因（待验证）。
+记账路径长与预算提醒缺失，是放弃记账的主要原因（待验证）。
 
 ## 公开产品参考
 
-公开产品提供订阅列表与续费提醒，但效果未核实。
+公开产品提供快速记账与分类统计，但效果未核实。
 
 ## 首版需求收口
 
-首版聚焦订阅列表、取消订阅、续费提醒与支出统计。
+首版聚焦记一笔、账单首页、分类统计与预算提醒。
 
 ## 验证与指标
 
-订阅转化完成率、取消成功率、续费提醒开启率。
+记账完成率、次日记账留存率、预算设置率。
 
 ## 待确认结论
 
-续费提醒的默认时机仍待确认。
+预算默认值仍待确认。
 """
 
-PRD = """# 订阅管理 App 功能需求文档
+PRD = """# 记账本 App 功能需求文档
 
 ## 文档概述
 
-- 标题：订阅管理 App
+- 标题：记账本 App
 - 版本号：V0.1
 - 作者：IntentFlow 演示
 - 日期：2026-10-11
 - 状态：探索性草案（演示数据）
 - 适用对象：产品、设计、开发、测试
 - 证据状态：provisional
-- 变更摘要：首版聚焦订阅列表、取消、续费提醒与支出统计。
+- 变更摘要：首版聚焦记一笔、账单首页、分类统计与预算提醒。
 
 ## 需求背景和目标
 
 ### 项目背景
 
-- 问题现状：多订阅用户入口分散，取消与续费失控。
+- 问题现状：日常消费后记账坚持难，月底才发现超支。
 - 数据佐证：模拟反馈 3 条，公开产品页 1 个（演示）。
-- 归因分析：分散入口与缺失提醒是主因（待验证）。
-- 解决方案：一个入口管理所有订阅、取消与续费提醒。
-- 产品价值：减少误续费，帮助用户看清支出。
+- 归因分析：记账路径长与预算提醒缺失是主因（待验证）。
+- 解决方案：几秒记完一笔，分类自动，预算超支提前提醒。
+- 产品价值：降低记账负担，帮助用户看清并控制支出。
 
 ### 需求目标
 
-- 用户目标：在一个入口看清并管理所有订阅。
-- 业务/研究目标：验证集中管理是否降低误续费。
-- 衡量指标：取消成功率、续费提醒开启率。
-- 分子/分母：分别记录完成取消 / 进入取消、开启提醒 / 进入订阅详情。
+- 用户目标：几秒记完一笔，月底不超支。
+- 业务/研究目标：验证简化记账路径能否提升坚持率。
+- 衡量指标：记账完成率、预算设置率。
+- 分子/分母：保存成功 / 开始记账；设置预算 / 进入统计。
 
 ## 功能详细说明
 
@@ -111,54 +112,55 @@ PRD = """# 订阅管理 App 功能需求文档
 
 | 优先级 | 功能 ID | 功能名称 | 功能流程 | 原型图/状态 | 功能描述 | 数据策略 | 特殊场景 | 依赖项 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| P0 | F-01 | 订阅列表 | 进入 → 查看列表 | P01 | 汇总展示所有订阅 | 订阅记录 | 空状态 | 订阅数据 |
-| P0 | F-02 | 订阅详情 | 选择订阅 → 查看详情 | P02 | 展示单条订阅信息 | 订阅记录 | 无 | 订阅数据 |
-| P0 | F-03 | 取消订阅 | 详情 → 确认取消 | P03 | 一键取消订阅 | 取消状态 | 确认拦截 | 订阅数据 |
-| P1 | F-04 | 续费提醒 | 详情 → 设置提醒 | P03 | 续费前提醒 | 提醒设置 | 无 | 通知服务 |
-| P1 | F-05 | 支出统计 | 列表 → 查看统计 | P01 | 汇总月度支出 | 金额汇总 | 无 | 订阅数据 |
+| P0 | F-01 | 记一笔 | 首页 → 记一笔 → 保存 | P02 | 几秒记录一笔支出 | 账单记录 | 空金额拦截 | 本地存储 |
+| P0 | F-02 | 账单首页 | 进入 → 查看今日与最近 | P01 | 汇总展示今日与最近账单 | 账单记录 | 空状态 | 本地存储 |
+| P0 | F-03 | 分类统计 | 首页 → 查看统计 | P03 | 按分类汇总本月支出 | 金额汇总 | 无 | 账单数据 |
+| P1 | F-04 | 月度切换 | 首页 → 切换月份 | P01 | 按月查看账单 | 月度汇总 | 无 | 账单数据 |
+| P1 | F-05 | 预算提醒 | 统计 → 设置预算 | P03 | 超支前提醒 | 预算设置 | 无 | 通知 |
 
-### F-01 订阅列表
-
-#### 功能原型与交互说明
-
-| 序号与功能名称 | 原型图/状态 | 详细说明 |
-| --- | --- | --- |
-| 1. 订阅列表 | [[prototype:P01]] | **页面元素**：订阅卡片、金额、状态。<br>**功能流程**：进入 → 查看列表 → 选择订阅。<br>**展示/交互说明**：点击卡片进入详情。<br>**数据策略**：按订阅记录展示。<br>**边界/异常说明**：无订阅时显示空状态。<br>**埋点关联**：EVT-01。 |
-
-### F-02 订阅详情
+### F-01 记一笔
 
 #### 功能原型与交互说明
 
 | 序号与功能名称 | 原型图/状态 | 详细说明 |
 | --- | --- | --- |
-| 1. 订阅详情 | [[prototype:P02]] | **页面元素**：订阅信息、操作按钮。<br>**功能流程**：选择订阅 → 查看详情。<br>**展示/交互说明**：展示金额、周期、状态。<br>**数据策略**：读取单条订阅。<br>**埋点关联**：EVT-02。 |
+| 1. 记一笔 | [[prototype:P02]] | **页面元素**：金额、分类网格、保存按钮。<br>**功能流程**：首页 → 记一笔 → 选分类 → 保存。<br>**展示/交互说明**：点选分类高亮，保存后回首页并置顶新账单。<br>**数据策略**：金额 + 分类 + 时间写入账单。<br>**边界/异常说明**：金额为 0 时不可保存。<br>**埋点关联**：EVT-02、EVT-03。 |
 
-### F-03 取消订阅
+### F-02 账单首页
 
 #### 功能原型与交互说明
 
 | 序号与功能名称 | 原型图/状态 | 详细说明 |
 | --- | --- | --- |
-| 1. 取消订阅 | [[prototype:P03]] | **页面元素**：确认弹窗、取消按钮。<br>**功能流程**：详情 → 确认取消。<br>**展示/交互说明**：二次确认后取消。<br>**数据策略**：写入取消状态。<br>**边界/异常说明**：确认前不生效。<br>**埋点关联**：EVT-03。 |
+| 1. 账单首页 | [[prototype:P01]] | **页面元素**：今日支出、最近账单、记一笔按钮。<br>**功能流程**：进入 → 查看今日与最近账单。<br>**数据策略**：按时间倒序展示。<br>**边界/异常说明**：无账单时显示空状态。<br>**埋点关联**：EVT-01。 |
+
+### F-03 分类统计
+
+#### 功能原型与交互说明
+
+| 序号与功能名称 | 原型图/状态 | 详细说明 |
+| --- | --- | --- |
+| 1. 分类统计 | [[prototype:P03]] | **页面元素**：本月总额、分类条形。<br>**功能流程**：首页 → 统计。<br>**数据策略**：按分类汇总。<br>**埋点关联**：EVT-04。 |
 
 ## 非功能需求
 
-- 性能：列表加载目标在真实设备测试后确认。
-- 安全性：只允许用户管理自己的订阅。
+- 性能：首页加载目标在真实设备测试后确认。
+- 安全性：账单仅保存在用户设备。
 
 ## 数据埋点
 
 ### 分析思路
 
-先回答取消成功率与续费提醒开启率两个问题。
+先回答记账完成率与预算设置率两个问题。
 
 ### 埋点表
 
 | 事件 ID | 参数名 | 参数说明 | 埋点时机 | 触发条件 | 关联指标 |
 | --- | --- | --- | --- | --- | --- |
-| EVT-01 | subscription_list_viewed | 查看列表 | 进入列表 | 列表加载成功 | 进入人数 |
-| EVT-02 | subscription_detail_viewed | 查看详情 | 打开详情 | 点击卡片 | 详情人数 |
-| EVT-03 | cancel_confirmed | 确认取消 | 确认取消 | 二次确认 | 取消成功率 |
+| EVT-01 | bill_home_viewed | 查看首页 | 进入首页 | 首页加载成功 | 进入人数 |
+| EVT-02 | bill_entry_started | 开始记账 | 打开记一笔 | 点击记一笔 | 开始人数 |
+| EVT-03 | bill_saved | 保存账单 | 保存成功 | 金额合法 | 记账完成率 |
+| EVT-04 | stats_viewed | 查看统计 | 打开统计 | 点击统计 | 统计人数 |
 
 ## 附录
 
@@ -170,90 +172,140 @@ PRD = """# 订阅管理 App 功能需求文档
 
 STATE_MAP = """| State ID | PRD behavior ID | Entry/trigger | Visible state | Available action | Next state | Asset link | Data status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| P01 | F-01 | 进入 | 订阅列表 | 查看详情 | P02 | #P01 | 模拟 |
-| P02 | F-02 | 点击卡片 | 订阅详情 | 取消/提醒 | P03 | #P02 | 模拟 |
-| P03 | F-03、F-04 | 点击操作 | 确认/提醒 | 确认取消 | P01 | #P03 | 模拟 |
+| P01 | F-02 | 进入 | 账单首页 | 记一笔/统计 | P02 | #P01 | 模拟 |
+| P02 | F-01 | 点击记一笔 | 记一笔 | 选分类保存 | P01 | #P02 | 模拟 |
+| P03 | F-03、F-05 | 点击统计 | 分类统计 | 设置预算 | P01 | #P03 | 模拟 |
 """
 
 PROTOTYPE = """<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>订阅管理 App 原型</title><style>
-*{{box-sizing:border-box}} body{{margin:0;font:14px/1.6 system-ui,"Microsoft YaHei",sans-serif;background:#eef1f5;color:#243044}}
-.app{{max-width:520px;margin:0 auto;background:#f5f7fa;min-height:100vh}}
-.screen{{display:none;padding-bottom:24px}} .screen.active{{display:block}}
-.navbar{{background:#1e5fa5;color:#fff;padding:18px 20px;font-size:18px;font-weight:700;display:flex;justify-content:space-between;align-items:center}}
-.navbar .back{{color:#fff;text-decoration:none;font-size:14px}}
-.body{{padding:18px}}
-.section-title{{font-size:13px;color:#6a7a8e;margin:6px 2px 10px}}
-.list-card{{background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;display:flex;align-items:center;gap:14px;cursor:pointer;box-shadow:0 1px 2px rgba(20,40,70,.05)}}
-.list-card:hover{{box-shadow:0 4px 12px rgba(20,40,70,.12)}}
-.icon{{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-size:22px;flex:0 0 auto}}
-.icon.video{{background:#e7f0ff}} .icon.cloud{{background:#e7f6f1}} .icon.music{{background:#fdf1e7}}
-.list-info{{flex:1}} .name{{font-weight:600}} .sub{{color:#6a7a8e;font-size:12.5px}}
-.amount{{font-weight:700;color:#1e5fa5}}
-.summary{{background:#fff;border-radius:14px;padding:16px;display:flex;justify-content:space-between;align-items:center;margin-top:4px}}
-.summary b{{color:#1e5fa5;font-size:18px}}
-.pill{{border:1px solid #c9d4e0;border-radius:999px;padding:2px 9px;color:#51647a;font-size:12px}}
-.detail-line{{padding:12px 0;border-bottom:1px solid #f0f2f5;display:flex}} .detail-line b{{width:90px;color:#6a7a8e;font-weight:500}}
-.btn-row{{display:flex;gap:10px;margin-top:18px}}
-button{{flex:1;background:#1e5fa5;color:#fff;border:0;border-radius:10px;padding:12px;cursor:pointer;font:inherit;font-weight:600}}
-button.danger{{background:#a04e45}} button.ghost{{background:#fff;color:#1e5fa5;border:1px solid #1e5fa5}}
-.confirm-card{{background:#fff;border-radius:14px;padding:20px;text-align:center}}
-.confirm-card .warn{{font-size:40px;margin-bottom:8px}}
-.confirm-card p{{color:#51647a;margin:6px 0 18px}}
+<title>记账本 App 原型</title><style>
+*{box-sizing:border-box} body{margin:0;font:14px/1.6 system-ui,"Microsoft YaHei",sans-serif;background:#e9edf2;color:#243044}
+.app{max-width:520px;margin:0 auto;background:#f6f8fb;min-height:100vh;position:relative}
+.screen{display:none;padding-bottom:90px} .screen.active{display:block}
+.navbar{background:#1f7a5c;color:#fff;padding:18px 20px;font-size:18px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.navbar .back{color:#fff;text-decoration:none;font-size:14px}
+.body{padding:16px}
+.today{background:linear-gradient(120deg,#1f7a5c,#2b9d77);color:#fff;border-radius:16px;padding:20px;margin-bottom:16px}
+.today .label{font-size:13px;opacity:.85} .today .num{font-size:34px;font-weight:800;margin-top:4px}
+.today .row2{display:flex;justify-content:space-between;margin-top:10px;font-size:13px;opacity:.9}
+.section-title{font-size:13px;color:#6a7a8e;margin:2px 2px 10px}
+.bill{background:#fff;border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:14px;margin-bottom:10px;box-shadow:0 1px 2px rgba(20,40,70,.05)}
+.bill .ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:20px;flex:0 0 auto}
+.bill .info{flex:1} .bill .name{font-weight:600} .bill .sub{color:#8a96a6;font-size:12.5px}
+.bill .amt{font-weight:700}
+.fab{position:absolute;right:22px;bottom:26px;background:#1f7a5c;color:#fff;border:0;border-radius:999px;padding:14px 22px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 16px rgba(31,122,92,.4)}
+.amount-display{text-align:center;padding:26px 0 10px}
+.amount-display .num{font-size:44px;font-weight:800;color:#243044}
+.amount-display .label{color:#8a96a6;font-size:13px}
+.cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:10px 0 20px}
+.cat{background:#fff;border:2px solid transparent;border-radius:14px;padding:14px 4px;text-align:center;cursor:pointer}
+.cat .e{font-size:24px} .cat .t{font-size:12.5px;margin-top:4px;color:#51647a}
+.cat.selected{border-color:#1f7a5c;background:#edf7f3}
+.save-btn{width:100%;background:#1f7a5c;color:#fff;border:0;border-radius:12px;padding:14px;font-size:16px;font-weight:700;cursor:pointer}
+.bar-row{margin-bottom:14px} .bar-row .t{display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:5px}
+.bar-row .t b{font-weight:600} .bar-track{height:10px;background:#e4e9ef;border-radius:999px;overflow:hidden}
+.bar-fill{height:100%;border-radius:999px}
+.total-card{background:#fff;border-radius:14px;padding:16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.total-card b{font-size:22px;color:#1f7a5c}
+.budget{background:#fff;border-radius:14px;padding:14px 16px;display:flex;gap:12px;align-items:center;margin-top:16px}
+.budget input{flex:1;border:1px solid #c9d4e0;border-radius:10px;padding:10px;font:inherit}
 </style></head><body data-intentflow-viewport="520x900">
 <div class="app">
-<section id="P01" class="screen"><div class="navbar">订阅管理 <span style="font-size:13px;font-weight:400">本月支出 ¥343</span></div>
-<div class="body"><div class="section-title">全部订阅 · 3 项</div>
-<div class="list-card" onclick="go('P02')"><div class="icon video">🎬</div><div class="list-info"><div class="name">视频会员</div><div class="sub">每月 30 元 · 下次扣费 11-01</div></div><span class="amount">¥30</span></div>
-<div class="list-card" onclick="go('P02')"><div class="icon cloud">☁️</div><div class="list-info"><div class="name">云存储</div><div class="sub">每年 298 元 · 下次扣费 2027-03</div></div><span class="amount">¥298</span></div>
-<div class="list-card" onclick="go('P02')"><div class="icon music">🎵</div><div class="list-info"><div class="name">音乐会员</div><div class="sub">每月 15 元 · 下次扣费 11-05</div></div><span class="amount">¥15</span></div>
-<div class="summary"><div><div class="sub">本月订阅支出</div><b>¥343</b></div><span class="pill">3 项生效中</span></div></div></section>
 
-<section id="P02" class="screen"><div class="navbar"><a class="back" href="#P01" onclick="go('P01')">← 返回</a> 订阅详情</div>
-<div class="body"><div class="list-card" style="cursor:default"><div class="icon video">🎬</div><div class="list-info"><div class="name">视频会员</div><div class="sub">每月订阅</div></div><span class="amount">¥30/月</span></div>
-<div class="list-card" style="cursor:default"><div class="detail-line"><b>状态</b><span class="pill">生效中</span></div>
-<div class="detail-line"><b>下次扣费</b>2026-11-01</div>
-<div class="detail-line"><b>支付方式</b>微信支付</div>
-<div class="detail-line" style="border:0"><b>已订阅</b>8 个月</div></div>
-<div class="btn-row"><button class="ghost" onclick="alert('已开启续费提醒')">开启续费提醒</button><button class="danger" onclick="go('P03')">取消订阅</button></div></div></section>
+<section id="P01" class="screen">
+  <div class="navbar">简记账本 <span style="font-size:13px;font-weight:400">10 月</span></div>
+  <div class="body">
+    <div class="today"><div class="label">今日支出</div><div class="num" id="today-num">¥128.50</div>
+      <div class="row2"><span>本月累计 ¥2,340.20</span><span>预算 ¥3,000</span></div></div>
+    <div class="section-title">最近账单</div>
+    <div id="bill-list">
+      <div class="bill"><div class="ic" style="background:#fdf1e7">🍜</div><div class="info"><div class="name">餐饮</div><div class="sub">午餐 · 12:02</div></div><div class="amt">-¥28.00</div></div>
+      <div class="bill"><div class="ic" style="background:#e7f0ff">🚕</div><div class="info"><div class="name">交通</div><div class="sub">打车 · 09:40</div></div><div class="amt">-¥18.50</div></div>
+      <div class="bill"><div class="ic" style="background:#f3ecfb">🛒</div><div class="info"><div class="name">购物</div><div class="sub">日用品 · 昨天</div></div><div class="amt">-¥82.00</div></div>
+      <div class="bill"><div class="ic" style="background:#e7f6f1">☕</div><div class="info"><div class="name">餐饮</div><div class="sub">咖啡 · 昨天</div></div><div class="amt">-¥18.00</div></div>
+    </div>
+  </div>
+  <button class="fab" onclick="go('P02')">＋ 记一笔</button>
+</section>
 
-<section id="P03" class="screen"><div class="navbar"><a class="back" href="#P02" onclick="go('P02')">← 返回</a> 取消订阅</div>
-<div class="body"><div class="confirm-card"><div class="warn">⚠️</div>
-<h3 style="margin:0 0 6px">确定取消「视频会员」？</h3>
-<p>取消后当前周期结束即停止扣费，剩余权益保留至 2026-11-01。</p>
-<div class="btn-row"><button class="danger" onclick="alert('已取消订阅')">确认取消</button><button class="ghost" onclick="go('P02')">再想想</button></div></div></div></section>
+<section id="P02" class="screen">
+  <div class="navbar"><a class="back" onclick="go('P01')">← 返回</a> 记一笔</div>
+  <div class="body">
+    <div class="amount-display"><div class="label">支出金额</div><div class="num">¥25.00</div></div>
+    <div class="cat-grid" id="cats">
+      <div class="cat" data-name="餐饮"><div class="e">🍜</div><div class="t">餐饮</div></div>
+      <div class="cat" data-name="交通"><div class="e">🚕</div><div class="t">交通</div></div>
+      <div class="cat" data-name="购物"><div class="e">🛒</div><div class="t">购物</div></div>
+      <div class="cat" data-name="娱乐"><div class="e">🎮</div><div class="t">娱乐</div></div>
+    </div>
+    <button class="save-btn" onclick="save()">保存</button>
+  </div>
+</section>
+
+<section id="P03" class="screen">
+  <div class="navbar"><a class="back" onclick="go('P01')">← 返回</a> 分类统计</div>
+  <div class="body">
+    <div class="total-card"><div><div style="color:#8a96a6;font-size:13px">本月支出</div><b>¥2,340.20</b></div><span class="pill" style="border:1px solid #c9d4e0;border-radius:999px;padding:2px 9px;color:#51647a;font-size:12px">预算 ¥3,000 · 剩 22%</span></div>
+    <div class="section-title">分类占比</div>
+    <div class="bar-row"><div class="t"><b>🍜 餐饮</b><span>¥980 · 42%</span></div><div class="bar-track"><div class="bar-fill" style="width:42%;background:#1f7a5c"></div></div></div>
+    <div class="bar-row"><div class="t"><b>🛒 购物</b><span>¥640 · 27%</span></div><div class="bar-track"><div class="bar-fill" style="width:27%;background:#2b9d77"></div></div></div>
+    <div class="bar-row"><div class="t"><b>🏠 居住</b><span>¥420 · 18%</span></div><div class="bar-track"><div class="bar-fill" style="width:18%;background:#57b896"></div></div></div>
+    <div class="bar-row"><div class="t"><b>🚕 交通</b><span>¥180 · 8%</span></div><div class="bar-track"><div class="bar-fill" style="width:8%;background:#8fd0ba"></div></div></div>
+    <div class="bar-row"><div class="t"><b>🎮 娱乐</b><span>¥120 · 5%</span></div><div class="bar-track"><div class="bar-fill" style="width:5%;background:#bfe4d6"></div></div></div>
+    <div class="budget">💰 <span>月预算</span><input value="3000"><span>元</span></div>
+  </div>
+</section>
+
 </div>
 <script>
-function go(id){{location.hash=id}}
-function show(id){{document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));var el=document.getElementById(id);if(el)el.classList.add('active')}}
-show(location.hash.slice(1)||'P01');window.addEventListener('hashchange',()=>show(location.hash.slice(1)||'P01'));
+function go(id){location.hash=id}
+function show(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});var el=document.getElementById(id);if(el)el.classList.add('active')}
+show(location.hash.slice(1)||'P01');
+window.addEventListener('hashchange',function(){show(location.hash.slice(1)||'P01')});
+var picked='餐饮';
+document.querySelectorAll('#cats .cat').forEach(function(c){
+  c.addEventListener('click',function(){
+    document.querySelectorAll('#cats .cat').forEach(function(x){x.classList.remove('selected')});
+    c.classList.add('selected');picked=c.dataset.name;
+  });
+});
+document.querySelector('#cats .cat').classList.add('selected');
+function save(){
+  var list=document.getElementById('bill-list');
+  var div=document.createElement('div');div.className='bill';
+  div.innerHTML='<div class="ic" style="background:#edf7f3">🍜</div><div class="info"><div class="name">餐饮</div><div class="sub">刚刚</div></div><div class="amt">-¥25.00</div>';
+  list.insertBefore(div,list.firstChild);
+  var num=document.getElementById('today-num');
+  num.textContent='¥153.50';
+  go('P01');
+}
 </script></body></html>
 """
 
-CHECKLIST = """# 订阅管理 App 验收清单
+CHECKLIST = """# 记账本 App 验收清单
 
 | ID | 来源 | 优先级 | 前置条件 | 步骤 | 期望结果 | 状态 | 备注 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| AC-01 | F-01 | P0 | 已有订阅 | 进入列表 | 展示所有订阅 | 未测 | |
-| AC-02 | F-01 | P0 | 无订阅 | 进入列表 | 显示空状态 | 未测 | |
-| AC-03 | F-02 | P0 | 有订阅 | 点击卡片 | 展示详情 | 未测 | |
-| AC-04 | F-03 | P0 | 详情页 | 点击取消 | 二次确认 | 未测 | |
-| AC-05 | F-03 | P0 | 确认弹窗 | 确认取消 | 写入取消状态 | 未测 | |
-| AC-06 | F-04 | P1 | 详情页 | 开启提醒 | 记录提醒设置 | 未测 | |
+| AC-01 | F-02 | P0 | 已有账单 | 进入首页 | 展示今日与最近账单 | 未测 | |
+| AC-02 | F-02 | P0 | 无账单 | 进入首页 | 显示空状态 | 未测 | |
+| AC-03 | F-01 | P0 | 首页 | 点击记一笔 | 打开记账页 | 未测 | |
+| AC-04 | F-01 | P0 | 记账页 | 选分类并保存 | 账单置顶并更新今日 | 未测 | |
+| AC-05 | F-01 | P0 | 金额为 0 | 点击保存 | 拦截保存 | 未测 | |
+| AC-06 | F-03 | P0 | 首页 | 点击统计 | 展示分类占比 | 未测 | |
 """
 
-REPORT = """# 订阅管理 App 数据复盘报告
+REPORT = """# 记账本 App 数据复盘报告
 
 ## 1. 复盘问题与产品决策
 
 ### 复盘问题
 
-取消成功率与续费提醒开启率是否达到预期？
+简化记账路径后，记账完成率与预算设置率是否达到预期？
 
 ### 本报告支持的决策
 
-决定下一步是否优化取消入口与提醒时机。以下为演示数据。
+决定下一步是否继续压缩记账步骤，以及预算默认值如何定。以下为演示数据。
 
 ## 2. 数据契约
 
@@ -263,7 +315,7 @@ REPORT = """# 订阅管理 App 数据复盘报告
 | 观察窗口 | 2026-09-01 ~ 2026-09-30 |
 | 分析单位 | 会话 |
 | 主要来源 | events.csv（演示） |
-| 样本量 | 8,420 会话 |
+| 样本量 | 6,318 会话 |
 | 缺失字段 | 无 |
 | 排除项 | 内部测试账号 |
 
@@ -271,68 +323,69 @@ REPORT = """# 订阅管理 App 数据复盘报告
 
 | 指标 | 目标口径 | 本轮结果 | 原因 |
 | --- | --- | --- | --- |
-| 取消成功率 | 完成取消 / 进入取消 | 71.4% | 可复算 |
-| 续费提醒开启率 | 开启提醒 / 进入详情 | 43.2% | 可复算 |
+| 记账完成率 | 保存成功 / 开始记账 | 86.2% | 可复算 |
+| 预算设置率 | 设置预算 / 进入统计 | 21.5% | 可复算 |
 
 ## 4. 已观察事实
 
-1. 取消成功率 71.4%，仍有约三成用户在确认弹窗流失。
-2. 续费提醒开启率 43.2%，不足一半。
+1. 记账完成率 86.2%，简化路径后保存顺畅。
+2. 预算设置率 21.5%，大量用户从不设置预算。
 
 ## 5. 观察、推断与反例
 
 ### 观察
 
-- 确认弹窗是取消流程的主要流失点。
+- 记账路径已足够短，放弃主要发生在开始记账之前。
 ### 推断（待验证）
 
-- 取消文案可能让用户犹豫，需 A/B 验证。
+- 预算设置入口太深，用户找不到，需把入口前置验证。
 ### 其他解释
 
-- 流失也可能来自误点取消。
+- 低设置率也可能来自用户本来就没有预算习惯。
 
 ## 6. 可执行选项（均为助手建议）
 
-1. **简化取消弹窗**：减少文案层级，观察成功率变化。
-2. **默认开启提醒**：将续费提醒改为默认开启。
+1. **前置预算入口**：首页预算卡片直达设置，观察设置率变化。
+2. **默认预算**：按上月支出给默认预算，用户可改。
 
 ## 8. 局限与复盘结论
 
 - 本报告为演示数据。
 
-**结论：**优先简化取消弹窗，并小流量验证提醒默认开启。
+**结论：**优先做预算入口前置，并小流量验证默认预算。
 """
 
 METRICS = """# 指标定义
 
 | 指标 | 单位 | 分子 | 分母 | 资格条件 | 时间窗/时区 | 去重键 | 当前基线 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 取消成功率 | 会话 | 完成取消的会话数 | 进入取消流程的会话数 | 进入取消 | 30 天 | session_id | 71.4% |
-| 续费提醒开启率 | 会话 | 开启提醒的会话数 | 进入订阅详情的会话数 | 进入详情 | 30 天 | session_id | 43.2% |
+| 记账完成率 | 会话 | 保存成功的会话数 | 开始记账的会话数 | 打开记一笔 | 30 天 | session_id | 86.2% |
+| 预算设置率 | 会话 | 设置预算的会话数 | 进入统计的会话数 | 进入统计 | 30 天 | session_id | 21.5% |
 
 ## 口径约束
 
-- 会话级去重，同一会话多次操作只计一次。
+- 会话级去重，同一会话多次保存只计一次。
 - 以上数字为演示数据。
 """
 
-STAGE_PAGE = """<!doctype html>
+STAGE_TEMPLATE = """<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><style>
-*{{box-sizing:border-box}} body{{margin:0;font:16px/1.7 system-ui,"Microsoft YaHei",sans-serif;background:#f5f7fa;color:#243044;display:grid;place-items:center;min-height:100vh}}
-.card{{background:#fff;border:1px solid #dfe5ec;border-radius:16px;padding:48px 56px;max-width:760px;width:92%;box-shadow:0 6px 24px rgba(20,40,70,.06)}}
-.eyebrow{{color:#1e5fa5;font:600 13px/1 ui-monospace,monospace;letter-spacing:.1em}}
-h1{{font-size:34px;margin:8px 0 12px}}
-p{{color:#51647a;margin:6px 0}}
-.code{{background:#f2f5f9;border:1px solid #dfe5ec;border-radius:10px;padding:14px 18px;font:13px/1.7 ui-monospace,monospace;color:#3a4a5e;margin-top:16px;white-space:pre}}
-.badge{{display:inline-block;border:1px solid #e2c47c;background:#fbf4e2;color:#8f6713;border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600;margin-top:14px}}
+*{box-sizing:border-box} body{margin:0;font:16px/1.7 system-ui,"Microsoft YaHei",sans-serif;background:#f5f7fa;color:#243044;display:grid;place-items:center;min-height:100vh}
+.card{background:#fff;border:1px solid #dfe5ec;border-radius:16px;padding:48px 56px;max-width:780px;width:92%;box-shadow:0 6px 24px rgba(20,40,70,.06)}
+.eyebrow{color:#1f7a5c;font:600 13px/1 ui-monospace,monospace;letter-spacing:.1em}
+h1{font-size:34px;margin:8px 0 12px}
+p{color:#51647a;margin:6px 0}
+.code{background:#f2f5f9;border:1px solid #dfe5ec;border-radius:10px;padding:14px 18px;font:13px/1.7 ui-monospace,monospace;color:#3a4a5e;margin-top:16px;white-space:pre}
+.badge{display:inline-block;border:1px solid #e2c47c;background:#fbf4e2;color:#8f6713;border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600;margin-top:14px}
+code{font:13px ui-monospace,monospace;background:#eef2f7;border:1px solid #dfe5ec;border-radius:5px;padding:1px 6px}
 </style></head><body><div class="card">
-<div class="eyebrow">{EYEBROW}</div><h1>{TITLE}</h1>{BODY}
+<div class="eyebrow">__NO__</div><h1>__TITLE__</h1>__BODY__
 </div></body></html>
 """
 
 
-def _stage_page(eyebrow: str, title: str, body: str) -> str:
-    return STAGE_PAGE.format(EYEBROW=eyebrow, TITLE=title, BODY=body)
+def _stage_page(no: str, title: str, body: str) -> str:
+    return STAGE_TEMPLATE.replace("__NO__", no).replace("__TITLE__", title).replace("__BODY__", body)
 
 
 def _run(*args: str, check: bool = True) -> None:
@@ -360,7 +413,7 @@ def _write_case(req: Path) -> None:
     (req / "stage-1.html").write_text(_stage_page(
         "STEP 1", "项目进入",
         '<p>确定当前需求，复用其 <code>requirements/&lt;name&gt;/</code> 目录，读取已有状态、决策与资料。</p>'
-        '<div class="code">requirements/subflow/\n├── README.md\n├── source.md\n├── decisions.md\n├── open-questions.md\n├── research/  需求证据\n├── prd/       PRD\n├── design/    原型\n├── flows/     流程\n├── qa/        验收\n└── analytics/ 数据复盘</div>',
+        '<div class="code">requirements/expense-app/\n├── README.md\n├── source.md\n├── decisions.md\n├── open-questions.md\n├── research/  需求证据\n├── prd/       PRD\n├── design/    原型\n├── flows/     流程\n├── qa/        验收\n└── analytics/ 数据复盘</div>',
     ), encoding="utf-8")
     (req / "stage-3.html").write_text(_stage_page(
         "STEP 3", "需求闸门",
@@ -383,15 +436,15 @@ def _generate(req: Path) -> None:
     _run("render", "--requirement", str(req), "--kind", "analytics")
 
 
-def main() -> None:
-    demo_dir = ROOT / "docs" / "demo"
-    demo_dir.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory() as tmp:
-        req = Path(tmp) / "subflow"
-        _write_case(req)
-        _generate(req)
-        _record(req, demo_dir / "workflow.webm")
-    print(f"workflow.webm: {(demo_dir / 'workflow.webm').stat().st_size} bytes")
+def _find_ffmpeg() -> Path | None:
+    base = Path.home() / "AppData" / "Local" / "ms-playwright"
+    if not base.is_dir():
+        return None
+    for child in sorted(base.glob("ffmpeg-*"), reverse=True):
+        exe = child / "ffmpeg-win64.exe"
+        if exe.is_file():
+            return exe
+    return None
 
 
 def _record(req: Path, target: Path) -> None:
@@ -407,34 +460,37 @@ def _record(req: Path, target: Path) -> None:
             record_video_size={"width": 1280, "height": 800},
         )
         page = context.new_page()
+        page.on("dialog", lambda dialog: dialog.accept())
 
         # 1 项目进入
         page.goto((req / "stage-1.html").as_uri(), wait_until="networkidle")
-        page.wait_for_timeout(2800)
+        page.wait_for_timeout(2600)
 
         # 2 需求挖掘
         page.goto((req / "research" / "demand-insight.html").as_uri(), wait_until="networkidle")
-        page.wait_for_timeout(3000)
+        page.wait_for_timeout(2800)
 
         # 3 需求闸门
         page.goto((req / "stage-3.html").as_uri(), wait_until="networkidle")
-        page.wait_for_timeout(2800)
+        page.wait_for_timeout(2600)
 
         # 4 PRD 评审
         page.goto((req / "prd" / "PRD-review.html").as_uri(), wait_until="networkidle")
-        page.wait_for_timeout(3200)
+        page.wait_for_timeout(3000)
 
-        # 5 流程 + 原型（点击操作）
+        # 5 流程 + 原型（真实点击：记一笔 → 选分类 → 保存 → 统计）
         page.goto((req / "design" / "prototype.html").as_uri(), wait_until="networkidle")
+        page.wait_for_timeout(2400)
+        page.locator(".fab").click()
+        page.wait_for_timeout(1600)
+        page.locator('#cats .cat[data-name="餐饮"]').click()
+        page.wait_for_timeout(900)
+        page.locator(".save-btn").click()
+        page.wait_for_timeout(1800)
+        page.locator("#P01 .navbar").click()  # small no-op pause on updated home
+        page.wait_for_timeout(600)
+        page.evaluate("location.hash='P03'")
         page.wait_for_timeout(2200)
-        page.locator("#P01 .list-card").first.click()
-        page.wait_for_timeout(1800)
-        page.locator("#P02 button.danger").click()
-        page.wait_for_timeout(1800)
-        page.locator("#P03 button.danger").click()
-        page.wait_for_timeout(1200)
-        page.keyboard.press("Enter")  # dismiss the alert
-        page.wait_for_timeout(800)
 
         # 6 验收
         page.goto((req / "qa" / "checklist-review.html").as_uri(), wait_until="networkidle")
@@ -449,11 +505,11 @@ def _record(req: Path, target: Path) -> None:
         page.goto((req / "analytics" / "report-review.html").as_uri(), wait_until="networkidle")
         page.wait_for_timeout(2200)
         page.locator('[data-funnel-base="previous"]').click()
-        page.wait_for_timeout(1200)
-        page.locator('#panel-5').scroll_into_view_if_needed()
+        page.wait_for_timeout(1100)
+        page.locator("#panel-5").scroll_into_view_if_needed()
         page.wait_for_timeout(1000)
         page.locator('.attribution-block[data-kind="hypothesis"] summary').click()
-        page.wait_for_timeout(1400)
+        page.wait_for_timeout(1300)
 
         context.close()
         browser.close()
@@ -462,6 +518,57 @@ def _record(req: Path, target: Path) -> None:
     if not videos:
         raise RuntimeError("no video produced")
     shutil.copy(videos[0], target)
+
+
+def _webm_to_gif(webm: Path, gif: Path) -> None:
+    ffmpeg = _find_ffmpeg()
+    if ffmpeg is None:
+        raise RuntimeError("playwright ffmpeg not found")
+    with tempfile.TemporaryDirectory() as tmp:
+        frames_dir = Path(tmp) / "frames"
+        frames_dir.mkdir()
+        # The bundled ffmpeg has no -vf filter support, so extract every frame
+        # and sample/scale with PIL instead.
+        subprocess.run(
+            [str(ffmpeg), "-y", "-i", str(webm), str(frames_dir / "f_%05d.png")],
+            capture_output=True, check=True,
+        )
+        paths = sorted(frames_dir.glob("f_*.png"))
+        # ~25fps source → take every 12th frame ≈ 2fps GIF.
+        _frames_to_gif(paths[::12], gif)
+
+
+def _frames_to_gif(frame_paths: list[Path], gif: Path) -> None:
+    from PIL import Image
+
+    images = []
+    for p in frame_paths:
+        image = Image.open(p).convert("RGB")
+        image.thumbnail((800, 800))
+        images.append(image)
+    if not images:
+        raise RuntimeError("no frames extracted")
+    durations = [500] * len(images)
+    durations[-1] = 1400
+    images[0].save(
+        gif, save_all=True, append_images=images[1:],
+        duration=durations, loop=0, optimize=True,
+    )
+
+
+def main() -> None:
+    demo_dir = ROOT / "docs" / "demo"
+    demo_dir.mkdir(parents=True, exist_ok=True)
+    gif = demo_dir / "workflow.gif"
+    webm = demo_dir / "workflow.webm"
+    with tempfile.TemporaryDirectory() as tmp:
+        req = Path(tmp) / "expense-app"
+        _write_case(req)
+        _generate(req)
+        _record(req, webm)
+        _webm_to_gif(webm, gif)
+    for f in (gif, webm):
+        print(f"{f.name}: {f.stat().st_size} bytes")
 
 
 if __name__ == "__main__":

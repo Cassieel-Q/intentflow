@@ -86,11 +86,11 @@ py -3 scripts/intentflow.py serve --requirement requirements/<name> --kind accep
 
 ## 演示
 
-完整工作流录屏 —— 从项目进入到数据复盘（步骤 1-7，含可操作原型点击）：
+完整工作流演示 —— 从项目进入到数据复盘（步骤 1-7，含可操作原型点击）：
 
-[![IntentFlow 完整工作流演示](docs/demo/workflow-cover.png)](docs/demo/workflow.webm)
+![IntentFlow 完整工作流演示](docs/demo/workflow.gif)
 
-> 点击上方封面观看完整录屏（33 秒）。第 7 步「数据复盘」交互式仪表盘细节：[demo.gif](docs/demo/demo.gif)
+> 高清录屏版本：[workflow.webm](docs/demo/workflow.webm)
 
 ## 测试
 
