@@ -1,15 +1,18 @@
-"""Generate a full-workflow demo GIF for IntentFlow.
+"""Record a full-workflow screen capture of IntentFlow.
 
 Builds a minimal but complete example case (a subscription-management app,
-clearly labelled as demo data), renders every workflow stage's artifact, and
-produces docs/demo/workflow.gif walking through the seven stages in order:
+labelled as demo data), then records one continuous screen capture walking the
+seven stages in order — including clicking through the operable prototype:
 
-  1-2 需求挖掘 → 3 需求闸门 → 4 PRD → 5 流程+原型 → 6 验收 → 7 数据复盘
+  1 项目进入 → 2 需求挖掘 → 3 需求闸门 → 4 PRD 评审
+  → 5 流程+原型(点击操作) → 6 验收 → 7 数据复盘
+
+Output: docs/demo/workflow.webm
 """
 
 from __future__ import annotations
 
-import io
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -175,34 +178,55 @@ STATE_MAP = """| State ID | PRD behavior ID | Entry/trigger | Visible state | Av
 PROTOTYPE = """<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>订阅管理 App 原型</title><style>
-*{{box-sizing:border-box}} body{{margin:0;font:14px/1.6 system-ui,"Microsoft YaHei",sans-serif;background:#f5f7fa;color:#243044}}
-.screen{{display:none;padding:24px;min-height:100vh;max-width:520px;margin:0 auto;background:#fff;border:1px solid #dfe5ec}}
-.screen.active{{display:block}}
-h1{{font-size:20px;margin:0 0 16px}} .card{{background:#fff;border:1px solid #dfe5ec;border-radius:12px;padding:16px;margin-bottom:12px}}
-.row{{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f2f5}}
-.row:last-child{{border:0}} .name{{font-weight:600}} .amount{{color:#1e5fa5;font-weight:700}}
+*{{box-sizing:border-box}} body{{margin:0;font:14px/1.6 system-ui,"Microsoft YaHei",sans-serif;background:#eef1f5;color:#243044}}
+.app{{max-width:520px;margin:0 auto;background:#f5f7fa;min-height:100vh}}
+.screen{{display:none;padding-bottom:24px}} .screen.active{{display:block}}
+.navbar{{background:#1e5fa5;color:#fff;padding:18px 20px;font-size:18px;font-weight:700;display:flex;justify-content:space-between;align-items:center}}
+.navbar .back{{color:#fff;text-decoration:none;font-size:14px}}
+.body{{padding:18px}}
+.section-title{{font-size:13px;color:#6a7a8e;margin:6px 2px 10px}}
+.list-card{{background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;display:flex;align-items:center;gap:14px;cursor:pointer;box-shadow:0 1px 2px rgba(20,40,70,.05)}}
+.list-card:hover{{box-shadow:0 4px 12px rgba(20,40,70,.12)}}
+.icon{{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-size:22px;flex:0 0 auto}}
+.icon.video{{background:#e7f0ff}} .icon.cloud{{background:#e7f6f1}} .icon.music{{background:#fdf1e7}}
+.list-info{{flex:1}} .name{{font-weight:600}} .sub{{color:#6a7a8e;font-size:12.5px}}
+.amount{{font-weight:700;color:#1e5fa5}}
+.summary{{background:#fff;border-radius:14px;padding:16px;display:flex;justify-content:space-between;align-items:center;margin-top:4px}}
+.summary b{{color:#1e5fa5;font-size:18px}}
 .pill{{border:1px solid #c9d4e0;border-radius:999px;padding:2px 9px;color:#51647a;font-size:12px}}
-button{{background:#1e5fa5;color:#fff;border:0;border-radius:8px;padding:9px 16px;cursor:pointer;font:inherit}}
-button.danger{{background:#a04e45}} .muted{{color:#6a7a8e}} .empty{{text-align:center;padding:40px 0;color:#6a7a8e}}
-.detail-line{{padding:10px 0;border-bottom:1px solid #f0f2f5}} .detail-line b{{display:inline-block;width:80px;color:#6a7a8e}}
+.detail-line{{padding:12px 0;border-bottom:1px solid #f0f2f5;display:flex}} .detail-line b{{width:90px;color:#6a7a8e;font-weight:500}}
+.btn-row{{display:flex;gap:10px;margin-top:18px}}
+button{{flex:1;background:#1e5fa5;color:#fff;border:0;border-radius:10px;padding:12px;cursor:pointer;font:inherit;font-weight:600}}
+button.danger{{background:#a04e45}} button.ghost{{background:#fff;color:#1e5fa5;border:1px solid #1e5fa5}}
+.confirm-card{{background:#fff;border-radius:14px;padding:20px;text-align:center}}
+.confirm-card .warn{{font-size:40px;margin-bottom:8px}}
+.confirm-card p{{color:#51647a;margin:6px 0 18px}}
 </style></head><body data-intentflow-viewport="520x900">
-<section id="P01" class="screen"><h1>订阅管理</h1>
-<div class="card"><div class="row"><div><div class="name">视频会员</div><div class="muted">每月 30 元</div></div><span class="amount">¥30</span></div>
-<div class="row"><div><div class="name">云存储</div><div class="muted">每年 298 元</div></div><span class="amount">¥298</span></div>
-<div class="row"><div><div class="name">音乐会员</div><div class="muted">每月 15 元</div></div><span class="amount">¥15</span></div></div>
-<div class="muted" style="margin-top:12px">本月支出 ¥343 · 点击卡片查看详情</div></section>
-<section id="P02" class="screen"><h1>订阅详情</h1>
-<div class="card"><div class="detail-line"><b>名称</b>视频会员</div>
-<div class="detail-line"><b>金额</b>¥30 / 月</div>
-<div class="detail-line"><b>状态</b><span class="pill">生效中</span></div>
-<div class="detail-line"><b>下次扣费</b>2026-11-01</div></div>
-<div style="display:flex;gap:10px;margin-top:16px"><button onclick="go('P03')">取消订阅</button><button onclick="alert('已开启续费提醒')">开启提醒</button></div></section>
-<section id="P03" class="screen"><h1>取消订阅</h1>
-<div class="card"><p>确定取消「视频会员」吗？取消后当前周期结束即停止。</p>
-<div style="display:flex;gap:10px;margin-top:8px"><button class="danger" onclick="alert('已取消')">确认取消</button><button onclick="go('P01')">返回</button></div></div></section>
+<div class="app">
+<section id="P01" class="screen"><div class="navbar">订阅管理 <span style="font-size:13px;font-weight:400">本月支出 ¥343</span></div>
+<div class="body"><div class="section-title">全部订阅 · 3 项</div>
+<div class="list-card" onclick="go('P02')"><div class="icon video">🎬</div><div class="list-info"><div class="name">视频会员</div><div class="sub">每月 30 元 · 下次扣费 11-01</div></div><span class="amount">¥30</span></div>
+<div class="list-card" onclick="go('P02')"><div class="icon cloud">☁️</div><div class="list-info"><div class="name">云存储</div><div class="sub">每年 298 元 · 下次扣费 2027-03</div></div><span class="amount">¥298</span></div>
+<div class="list-card" onclick="go('P02')"><div class="icon music">🎵</div><div class="list-info"><div class="name">音乐会员</div><div class="sub">每月 15 元 · 下次扣费 11-05</div></div><span class="amount">¥15</span></div>
+<div class="summary"><div><div class="sub">本月订阅支出</div><b>¥343</b></div><span class="pill">3 项生效中</span></div></div></section>
+
+<section id="P02" class="screen"><div class="navbar"><a class="back" href="#P01" onclick="go('P01')">← 返回</a> 订阅详情</div>
+<div class="body"><div class="list-card" style="cursor:default"><div class="icon video">🎬</div><div class="list-info"><div class="name">视频会员</div><div class="sub">每月订阅</div></div><span class="amount">¥30/月</span></div>
+<div class="list-card" style="cursor:default"><div class="detail-line"><b>状态</b><span class="pill">生效中</span></div>
+<div class="detail-line"><b>下次扣费</b>2026-11-01</div>
+<div class="detail-line"><b>支付方式</b>微信支付</div>
+<div class="detail-line" style="border:0"><b>已订阅</b>8 个月</div></div>
+<div class="btn-row"><button class="ghost" onclick="alert('已开启续费提醒')">开启续费提醒</button><button class="danger" onclick="go('P03')">取消订阅</button></div></div></section>
+
+<section id="P03" class="screen"><div class="navbar"><a class="back" href="#P02" onclick="go('P02')">← 返回</a> 取消订阅</div>
+<div class="body"><div class="confirm-card"><div class="warn">⚠️</div>
+<h3 style="margin:0 0 6px">确定取消「视频会员」？</h3>
+<p>取消后当前周期结束即停止扣费，剩余权益保留至 2026-11-01。</p>
+<div class="btn-row"><button class="danger" onclick="alert('已取消订阅')">确认取消</button><button class="ghost" onclick="go('P02')">再想想</button></div></div></div></section>
+</div>
 <script>
 function go(id){{location.hash=id}}
-function show(id){{document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}}
+function show(id){{document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));var el=document.getElementById(id);if(el)el.classList.add('active')}}
 show(location.hash.slice(1)||'P01');window.addEventListener('hashchange',()=>show(location.hash.slice(1)||'P01'));
 </script></body></html>
 """
@@ -292,14 +316,23 @@ METRICS = """# 指标定义
 - 以上数字为演示数据。
 """
 
-STAGES = [
-    ("步骤 1-2 · 需求挖掘", "research/demand-insight.html", None),
-    ("步骤 3 · 需求闸门", None, "provisional · 探索性演示"),
-    ("步骤 4 · PRD 评审", "prd/PRD-review.html", None),
-    ("步骤 5 · 流程 + 原型", "design/prototype.html", None),
-    ("步骤 6 · 验收", "qa/checklist-review.html", None),
-    ("步骤 7 · 数据复盘", "analytics/report-review.html", None),
-]
+STAGE_PAGE = """<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><style>
+*{{box-sizing:border-box}} body{{margin:0;font:16px/1.7 system-ui,"Microsoft YaHei",sans-serif;background:#f5f7fa;color:#243044;display:grid;place-items:center;min-height:100vh}}
+.card{{background:#fff;border:1px solid #dfe5ec;border-radius:16px;padding:48px 56px;max-width:760px;width:92%;box-shadow:0 6px 24px rgba(20,40,70,.06)}}
+.eyebrow{{color:#1e5fa5;font:600 13px/1 ui-monospace,monospace;letter-spacing:.1em}}
+h1{{font-size:34px;margin:8px 0 12px}}
+p{{color:#51647a;margin:6px 0}}
+.code{{background:#f2f5f9;border:1px solid #dfe5ec;border-radius:10px;padding:14px 18px;font:13px/1.7 ui-monospace,monospace;color:#3a4a5e;margin-top:16px;white-space:pre}}
+.badge{{display:inline-block;border:1px solid #e2c47c;background:#fbf4e2;color:#8f6713;border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600;margin-top:14px}}
+</style></head><body><div class="card">
+<div class="eyebrow">{EYEBROW}</div><h1>{TITLE}</h1>{BODY}
+</div></body></html>
+"""
+
+
+def _stage_page(eyebrow: str, title: str, body: str) -> str:
+    return STAGE_PAGE.format(EYEBROW=eyebrow, TITLE=title, BODY=body)
 
 
 def _run(*args: str, check: bool = True) -> None:
@@ -312,12 +345,8 @@ def _run(*args: str, check: bool = True) -> None:
 
 
 def _write_case(req: Path) -> None:
-    (req / "research").mkdir(parents=True)
-    (req / "prd").mkdir(parents=True)
-    (req / "design").mkdir(parents=True)
-    (req / "flows").mkdir(parents=True)
-    (req / "qa").mkdir(parents=True)
-    (req / "analytics").mkdir(parents=True)
+    for sub in ("research", "prd", "design", "flows", "qa", "analytics"):
+        (req / sub).mkdir(parents=True)
     (req / "research" / "feedback.csv").write_text(FEEDBACK, encoding="utf-8")
     (req / "research" / "products.csv").write_text(PRODUCTS, encoding="utf-8")
     (req / "research" / "demand-findings.md").write_text(FINDINGS, encoding="utf-8")
@@ -328,6 +357,17 @@ def _write_case(req: Path) -> None:
     (req / "qa" / "checklist.md").write_text(CHECKLIST, encoding="utf-8")
     (req / "analytics" / "report.md").write_text(REPORT, encoding="utf-8")
     (req / "analytics" / "metric-definitions.md").write_text(METRICS, encoding="utf-8")
+    (req / "stage-1.html").write_text(_stage_page(
+        "STEP 1", "项目进入",
+        '<p>确定当前需求，复用其 <code>requirements/&lt;name&gt;/</code> 目录，读取已有状态、决策与资料。</p>'
+        '<div class="code">requirements/subflow/\n├── README.md\n├── source.md\n├── decisions.md\n├── open-questions.md\n├── research/  需求证据\n├── prd/       PRD\n├── design/    原型\n├── flows/     流程\n├── qa/        验收\n└── analytics/ 数据复盘</div>',
+    ), encoding="utf-8")
+    (req / "stage-3.html").write_text(_stage_page(
+        "STEP 3", "需求闸门",
+        '<p>进入 PRD 前运行需求挖掘终审闸门，判定需求材料是否足以支撑正式产出。</p>'
+        '<span class="badge">provisional · 探索性演示</span>'
+        '<p style="margin-top:14px">只有 <code>ready</code> 才能进入正式 PRD；<code>provisional</code> 只能做探索性方案；<code>blocked</code> 必须先补材料。</p>',
+    ), encoding="utf-8")
 
 
 def _generate(req: Path) -> None:
@@ -350,79 +390,78 @@ def main() -> None:
         req = Path(tmp) / "subflow"
         _write_case(req)
         _generate(req)
-        _capture(req, demo_dir / "workflow.gif")
-    print(f"workflow.gif: {(demo_dir / 'workflow.gif').stat().st_size} bytes")
+        _record(req, demo_dir / "workflow.webm")
+    print(f"workflow.webm: {(demo_dir / 'workflow.webm').stat().st_size} bytes")
 
 
-def _capture(req: Path, target: Path) -> None:
+def _record(req: Path, target: Path) -> None:
     from playwright.sync_api import sync_playwright
 
-    shots: list[tuple[str, bytes | None, str | None]] = []
+    video_dir = req.parent / "video"
+    video_dir.mkdir()
     with sync_playwright() as p:
         browser = p.chromium.launch()
-        page = browser.new_page(viewport={"width": 1440, "height": 900})
-        for stage, rel, gate_text in STAGES:
-            if rel is None:
-                shots.append((stage, None, gate_text))
-                continue
-            html = req / rel
-            page.goto(html.as_uri(), wait_until="networkidle")
-            page.wait_for_timeout(700)
-            shots.append((stage, page.screenshot(), None))
+        context = browser.new_context(
+            viewport={"width": 1280, "height": 800},
+            record_video_dir=str(video_dir),
+            record_video_size={"width": 1280, "height": 800},
+        )
+        page = context.new_page()
+
+        # 1 项目进入
+        page.goto((req / "stage-1.html").as_uri(), wait_until="networkidle")
+        page.wait_for_timeout(2800)
+
+        # 2 需求挖掘
+        page.goto((req / "research" / "demand-insight.html").as_uri(), wait_until="networkidle")
+        page.wait_for_timeout(3000)
+
+        # 3 需求闸门
+        page.goto((req / "stage-3.html").as_uri(), wait_until="networkidle")
+        page.wait_for_timeout(2800)
+
+        # 4 PRD 评审
+        page.goto((req / "prd" / "PRD-review.html").as_uri(), wait_until="networkidle")
+        page.wait_for_timeout(3200)
+
+        # 5 流程 + 原型（点击操作）
+        page.goto((req / "design" / "prototype.html").as_uri(), wait_until="networkidle")
+        page.wait_for_timeout(2200)
+        page.locator("#P01 .list-card").first.click()
+        page.wait_for_timeout(1800)
+        page.locator("#P02 button.danger").click()
+        page.wait_for_timeout(1800)
+        page.locator("#P03 button.danger").click()
+        page.wait_for_timeout(1200)
+        page.keyboard.press("Enter")  # dismiss the alert
+        page.wait_for_timeout(800)
+
+        # 6 验收
+        page.goto((req / "qa" / "checklist-review.html").as_uri(), wait_until="networkidle")
+        page.wait_for_timeout(2200)
+        try:
+            page.locator(".acceptance-status-button[data-status='通过']").first.click()
+        except Exception:
+            pass
+        page.wait_for_timeout(1500)
+
+        # 7 数据复盘
+        page.goto((req / "analytics" / "report-review.html").as_uri(), wait_until="networkidle")
+        page.wait_for_timeout(2200)
+        page.locator('[data-funnel-base="previous"]').click()
+        page.wait_for_timeout(1200)
+        page.locator('#panel-5').scroll_into_view_if_needed()
+        page.wait_for_timeout(1000)
+        page.locator('.attribution-block[data-kind="hypothesis"] summary').click()
+        page.wait_for_timeout(1400)
+
+        context.close()
         browser.close()
 
-    _write_staged_gif(shots, target)
-
-
-def _load_font(size: int):
-    from PIL import ImageFont
-
-    for path in ("C:/Windows/Fonts/msyh.ttc", "C:/Windows/Fonts/msyhbd.ttc",
-                 "C:/Windows/Fonts/simhei.ttf", "C:/Windows/Fonts/simsun.ttc"):
-        try:
-            return ImageFont.truetype(path, size)
-        except OSError:
-            continue
-    return None
-
-
-def _write_staged_gif(shots: list[tuple[str, bytes | None, str | None]], target: Path) -> None:
-    from PIL import Image, ImageDraw
-
-    font = _load_font(30)
-    font_small = _load_font(22)
-
-    images = []
-    for stage, raw, gate_text in shots:
-        if raw is not None:
-            image = Image.open(io.BytesIO(raw)).convert("RGB")
-            image.thumbnail((860, 860))
-        else:
-            # Text card for the gate stage.
-            image = Image.new("RGB", (860, 540), (245, 247, 250))
-            draw = ImageDraw.Draw(image)
-            if font:
-                draw.text((60, 180), stage, fill=(36, 48, 68), font=font)
-                draw.text((60, 240), "需求闸门结果：", fill=(106, 122, 142), font=font_small)
-                draw.text((60, 290), "provisional", fill=(178, 80, 0), font=font)
-                draw.text((60, 340), "探索性演示 · 模拟数据仅验证流程与展示", fill=(106, 122, 142), font=font_small)
-        if raw is None or font:
-            draw = ImageDraw.Draw(image)
-            if font:
-                w, _ = image.size
-                box = draw.textbbox((0, 0), stage, font=font)
-                tw, th = box[2] - box[0], box[3] - box[1]
-                draw.rectangle([0, 0, tw + 28, th + 18], fill=(30, 95, 165))
-                draw.text((14, 9), stage, fill=(255, 255, 255), font=font)
-        images.append(image)
-
-    durations = [1300] * len(images)
-    if durations:
-        durations[-1] = 1800
-    images[0].save(
-        target, save_all=True, append_images=images[1:],
-        duration=durations, loop=0, optimize=True,
-    )
+    videos = list(video_dir.glob("*.webm"))
+    if not videos:
+        raise RuntimeError("no video produced")
+    shutil.copy(videos[0], target)
 
 
 if __name__ == "__main__":
