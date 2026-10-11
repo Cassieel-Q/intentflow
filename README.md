@@ -86,11 +86,11 @@ py -3 scripts/intentflow.py serve --requirement requirements/<name> --kind accep
 
 ## 演示
 
-交互式数据复盘仪表盘 —— 七个面板（分析总览 / 转化漏斗 / 每日趋势 / 分群诊断 / 洞察归因 / 行动建议 / 数据质量），支持筛选、切换口径、展开归因、勾选建议：
+完整工作流演示 —— 从需求挖掘到数据复盘（步骤 1-7）：
 
-![IntentFlow 交互式数据复盘演示](docs/demo/demo.gif)
+![IntentFlow 完整工作流演示](docs/demo/workflow.gif)
 
-> 完整演示视频：[demo.webm](docs/demo/demo.webm)
+> 第 7 步「数据复盘」交互式仪表盘细节：[demo.gif](docs/demo/demo.gif) · 完整录屏：[demo.webm](docs/demo/demo.webm)
 
 ## 测试
 
