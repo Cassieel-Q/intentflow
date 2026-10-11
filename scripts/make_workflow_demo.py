@@ -424,13 +424,23 @@ def _generate(req: Path) -> None:
 
 
 def _find_ffmpeg() -> Path | None:
-    base = Path.home() / "AppData" / "Local" / "ms-playwright"
-    if not base.is_dir():
-        return None
-    for child in sorted(base.glob("ffmpeg-*"), reverse=True):
-        exe = child / "ffmpeg-win64.exe"
-        if exe.is_file():
-            return exe
+    """Locate the ffmpeg binary bundled with Playwright on this platform."""
+    import os
+
+    home = Path.home()
+    bases = [home / "AppData" / "Local" / "ms-playwright"] if os.name == "nt" else [
+        home / "Library" / "Caches" / "ms-playwright",
+        home / ".cache" / "ms-playwright",
+    ]
+    exe_names = ["ffmpeg-win64.exe", "ffmpeg-mac", "ffmpeg-linux", "ffmpeg"]
+    for base in bases:
+        if not base.is_dir():
+            continue
+        for child in sorted(base.glob("ffmpeg-*"), reverse=True):
+            for name in exe_names:
+                exe = child / name
+                if exe.is_file():
+                    return exe
     return None
 
 

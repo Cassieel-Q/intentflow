@@ -49,28 +49,51 @@ requirements/<name>/
   archive/    日期化阶段归档
 ```
 
-## 快速开始
+## 使用说明
 
-环境要求：Python 3.11+，Node 22+（可选，用于浏览器校验）。
+### 环境要求
+
+- Python 3.10+（Windows / macOS / Linux 通用）
+- 依赖：`markdown-it-py`（渲染必需）；`playwright`、`Pillow`（可选，用于浏览器截图与演示 GIF）
+
+### 安装
+
+```bash
+git clone https://github.com/Cassieel-Q/intentflow.git
+cd intentflow
+python -m pip install -r requirements.txt
+```
+
+> Windows 用 `py -3`，macOS/Linux 用 `python3`。仓库也提供了启动脚本：
+> Windows 用 `scripts\intentflow-start.bat`，macOS 用 `scripts/intentflow-start.command`。
+
+### 跑通一个需求
 
 ```powershell
-# 全量自动化测试
-py -3 -m pytest -q
-
-# 新建需求目录（只补齐缺失的起始文件，不覆盖已有记录）
+# 1. 新建需求目录（只补齐缺失的起始文件，不覆盖已有记录）
 py -3 scripts/intentflow.py init --requirement requirements/<name>
 
-# 校验 PRD 结构
+# 2. 校验 PRD 结构
 py -3 scripts/intentflow.py validate --requirement requirements/<name> --kind prd
 
-# 生成联动评审 HTML
+# 3. 生成评审 HTML（prd / acceptance / analytics 三种）
 py -3 scripts/intentflow.py render --requirement requirements/<name> --kind prd
 py -3 scripts/intentflow.py render --requirement requirements/<name> --kind acceptance
 py -3 scripts/intentflow.py render --requirement requirements/<name> --kind analytics
 
-# 启动本地评审服务（保存验收状态 / Markdown 时使用）
+# 4. 启动本地评审服务（需要保存验收状态或编辑 Markdown 时）
 py -3 scripts/intentflow.py serve --requirement requirements/<name> --kind acceptance
+
+# 5. 运行自动化测试
+py -3 -m pytest -q
 ```
+
+### 可移植性说明
+
+- 工作流**没有任何硬编码的绝对路径或机器相关配置**，克隆到任何一台电脑即可直接运行。
+- 正式记录（PRD / 验收 / 数据报告）是 Markdown；评审 HTML 按需生成、可随时丢弃，不影响正式文件。
+- 浏览器截图 / 录屏是可选能力，需要 `playwright` 及一个可用的 Chromium / Edge 浏览器。
+- `scripts/make_workflow_demo.py` 是演示 GIF 生成脚本（可选）：它在临时目录构造示例、生成 `docs/demo/workflow.gif`，**不会污染 `requirements/` 工作目录**。
 
 ## 技能（Skills）
 
