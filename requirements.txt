@@ -1,14 +1,11 @@
 # IntentFlow 依赖
 
-# ===== 核心（必需，开箱即用）=====
-# 渲染评审 HTML
-markdown-it-py>=3,<5
-# 运行自动化测试
-pytest>=8
+# 核心（必需）
+markdown-it-py>=3,<5   # 渲染评审 HTML
+pytest>=8              # 运行自动化测试
 
-# ===== 可选：浏览器截图 / 录屏、演示 GIF 合成 =====
-# 需要时再安装（否则 capture / make_workflow_demo 命令会提示缺少依赖）：
-#   python -m pip install playwright pillow
+# 可选：浏览器截图（capture 命令）
+# 需要时再安装：
+#   python -m pip install playwright
 #   python -m playwright install chromium
 # playwright>=1.50,<2
-# Pillow>=10,<12
