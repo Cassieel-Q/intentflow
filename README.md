@@ -51,23 +51,37 @@ requirements/<name>/
 
 ## 使用说明
 
-### 环境要求
-
-- Python 3.10+（Windows / macOS / Linux 通用）
-- 依赖：`markdown-it-py`（渲染必需）；`playwright`、`Pillow`（可选，用于浏览器截图与演示 GIF）
-
-### 安装
+### 1. 开箱即用（三步）
 
 ```bash
+# ① 克隆仓库
 git clone https://github.com/Cassieel-Q/intentflow.git
 cd intentflow
+
+# ② 安装核心依赖（markdown-it-py + pytest，仅几十 KB）
 python -m pip install -r requirements.txt
+
+# ③ 自检环境：列出 Python / 依赖 / 浏览器 / 写权限 / 端口 各项是否就绪
+python scripts/intentflow.py doctor --requirement requirements/intentflow-lifecycle-2026-10-09
 ```
 
-> Windows 用 `py -3`，macOS/Linux 用 `python3`。仓库也提供了启动脚本：
-> Windows 用 `scripts\intentflow-start.bat`，macOS 用 `scripts/intentflow-start.command`。
+跑完 `doctor` 你会一眼看到缺什么：核心工作流（`init` / `validate` / `render` / `demand-report` / `demand-gate` / `serve`）只依赖 `markdown-it-py`；`pytest` 用于测试。**到此核心能力已开箱即用**。
 
-### 跑通一个需求
+### 2. 环境要求
+
+- Python 3.11+（Windows / macOS / Linux 通用）
+- 命令前缀：Windows 用 `py -3`，macOS / Linux 用 `python3`（或直接 `python`）
+
+### 3. 可选：浏览器截图 / 演示 GIF
+
+默认不安装，需要 `capture`（截图）或 `make_workflow_demo`（生成演示 GIF）时再装：
+
+```bash
+python -m pip install playwright pillow
+python -m playwright install chromium
+```
+
+### 4. 跑通一个需求
 
 ```powershell
 # 1. 新建需求目录（只补齐缺失的起始文件，不覆盖已有记录）
@@ -88,11 +102,12 @@ py -3 scripts/intentflow.py serve --requirement requirements/<name> --kind accep
 py -3 -m pytest -q
 ```
 
-### 可移植性说明
+### 5. 可移植性说明
 
 - 工作流**没有任何硬编码的绝对路径或机器相关配置**，克隆到任何一台电脑即可直接运行。
 - 正式记录（PRD / 验收 / 数据报告）是 Markdown；评审 HTML 按需生成、可随时丢弃，不影响正式文件。
-- 浏览器截图 / 录屏是可选能力，需要 `playwright` 及一个可用的 Chromium / Edge 浏览器。
+- 仓库自带跨平台启动脚本：Windows 用 `scripts/intentflow-start.bat`，macOS 用 `scripts/intentflow-start.command`。
+- 浏览器截图 / 录屏是可选能力（见第 3 步）；不装也不影响核心工作流。
 - `scripts/make_workflow_demo.py` 是演示 GIF 生成脚本（可选）：它在临时目录构造示例、生成 `docs/demo/workflow.gif`，**不会污染 `requirements/` 工作目录**。
 
 ## 技能（Skills）
